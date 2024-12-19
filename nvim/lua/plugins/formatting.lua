@@ -1,5 +1,4 @@
 return {
-
 	-- conform.nvim
 	{
 		"stevearc/conform.nvim",
@@ -26,7 +25,7 @@ return {
 				lua = { "stylua" },
 			},
 			format_on_save = {
-				lsp_format = "fallback",
+				-- lsp_format = "fallback",
 				async = false,
 				timeout_ms = 500,
 			},

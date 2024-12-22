@@ -4,4 +4,6 @@
 
 # ... but these
 !/nvim/
+!/tmux-powerline/
+!/.tmux.conf
 !/.gitignore

@@ -25,15 +25,6 @@ keymap("n", "\\s", ":%s//g<left><left>", { desc = "replace global" })
 -- Adjacent duplicate words
 -- keymap("n", "<leader>dw", "/\\(\\<\\w\\+\\>\\)\\_s*\\1")
 
--- Terminal window
-keymap(
-	"n",
-	"<leader>/",
-	":set splitright<cr>:vsplit<cr>:vertical resize +10<cr>:term<cr>",
-	{ desc = "open terminal on right" }
-)
-keymap("n", "<C-n>", ":tabe<cr>:-tabmove<cr>:term lazynpm<cr>", { desc = "quit terminal" })
-
 -- Cursor movement
 --     ^
 --     k

@@ -1,33 +1,26 @@
 return {
-	settings = {
-		Lua = {
-			workspace = {
-				checkThirdParty = false,
-				library = {
-					[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-					[vim.fn.stdpath("config") .. "/lua"] = true,
-				},
-			},
-			codeLens = {
-				enable = true,
-			},
-			completion = {
-				callSnippet = "Replace",
-			},
-			doc = {
-				privateName = { "^_" },
-			},
-			hint = {
-				enable = true,
-				setType = false,
-				paramType = true,
-				paramName = "Disable",
-				semicolon = "Disable",
-				arrayIndex = "Disable",
-			},
-			diagnostics = {
-				globals = { "vim" },
-			},
-		},
-	},
+    settings = {
+        Lua = {
+            workspace = {
+                checkThirdParty = false,
+            },
+            codeLens = {
+                enable = true,
+            },
+            completion = {
+                callSnippet = "Replace",
+            },
+            doc = {
+                privateName = { "^_" },
+            },
+            hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = "Disable",
+                semicolon = "Disable",
+                arrayIndex = "Disable",
+            },
+        },
+    },
 }

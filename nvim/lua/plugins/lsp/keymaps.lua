@@ -3,8 +3,8 @@ local M = {}
 ---@type KeysLspSpec[]|nil
 M._keys = nil
 
----@alias KeysLspSpec KeysSpec|{has?:string|string[], cond?:fun():boolean}
----@alias KeysLsp Keys|{has?:string|string[], cond?:fun():boolean}
+---@alias KeysLspSpec LazyKeysSpec|{has?:string|string[], cond?:fun():boolean}
+---@alias KeysLsp LazyKeys|{has?:string|string[], cond?:fun():boolean}
 
 ---@return KeysLspSpec[]
 function M.get()
@@ -12,7 +12,8 @@ function M.get()
         return M._keys
     end
 
-    M._keys =  {
+    -- stylua: ignore
+    M._keys = {
         -- { "<leader>cR", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
         { "<leader>cd", vim.diagnostic.open_float, desc = "Line Diagnostics" },
         { "<leader>cl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },
@@ -28,14 +29,14 @@ function M.get()
         {
             "<leader>cA",
             function()
-            vim.lsp.buf.code_action({
-                context = {
-                only = {
-                    "source",
-                },
-                diagnostics = {},
-                },
-            })
+                vim.lsp.buf.code_action({
+                    context = {
+                        only = {
+                            "source",
+                        },
+                        diagnostics = {},
+                    },
+                })
             end,
             desc = "Source Action",
             has = "codeAction",
@@ -43,12 +44,21 @@ function M.get()
         { "<leader>cc", vim.lsp.codelens.run, desc = "Run Codelens", mode = { "n", "v" }, has = "codeLens" },
         { "<leader>cC", vim.lsp.codelens.refresh, desc = "Refresh & Display Codelens", mode = { "n" }, has = "codeLens" },
         { "<leader>rn", vim.lsp.buf.rename, desc = "Rename", has = "rename" },
+        { "<leader>rf", function() Snacks.rename.rename_file() end, desc = "Rename File", mode ={"n"}, has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } },
         { "]d", M.diagnostic_goto(true), desc = "Next Diagnostic" },
         { "[d", M.diagnostic_goto(false), desc = "Prev Diagnostic" },
         { "]e", M.diagnostic_goto(true, "ERROR"), desc = "Next Error" },
         { "[e", M.diagnostic_goto(false, "ERROR"), desc = "Prev Error" },
         { "]w", M.diagnostic_goto(true, "WARN"), desc = "Next Warning" },
         { "[w", M.diagnostic_goto(false, "WARN"), desc = "Prev Warning" },
+        { "]]", function() Snacks.words.jump(vim.v.count1) end, has = "documentHighlight",
+            desc = "Next Reference", cond = function() return Snacks.words.is_enabled() end },
+        { "[[", function() Snacks.words.jump(-vim.v.count1) end, has = "documentHighlight",
+            desc = "Prev Reference", cond = function() return Snacks.words.is_enabled() end },
+        { "<A-n>", function() Snacks.words.jump(vim.v.count1, true) end, has = "documentHighlight",
+            desc = "Next Reference", cond = function() return Snacks.words.is_enabled() end },
+        { "<A-p>", function() Snacks.words.jump(-vim.v.count1, true) end, has = "documentHighlight",
+            desc = "Prev Reference", cond = function() return Snacks.words.is_enabled() end },
         -- { "gr", vim.lsp.buf.references, desc = "References", nowait = true },
         -- { "gd", function() require("telescope.builtin").lsp_definitions({ reuse_win = true }) end, desc = "Goto Definition", has = "definition" },
         -- { "gI", function() require("telescope.builtin").lsp_implementations({ reuse_win = true }) end, desc = "Goto Implementation" },
@@ -78,7 +88,7 @@ function M.has(buffer, method)
 end
 
 -- get all keymaps
----@return LazyKeysLsp[]
+---@return KeysLsp[]
 function M.resolve(buffer)
     local Keys = require("lazy.core.handler.keys")
     if not Keys.resolve then

@@ -10,7 +10,8 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
         "--filter=blob:none",
         "--branch=stable",
         lazyrepo,
-        lazypath })
+        lazypath,
+    })
     if vim.v.shell_error ~= 0 then
         vim.api.nvim_echo({
             { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
@@ -53,3 +54,7 @@ local opts = {
 }
 
 require("lazy").setup("plugins", opts)
+
+if not Util.has("snacks.nvim") then
+    vim.opt.statuscolumn = [[%!v:lua.require'util'.ui.statuscolumn()]]
+end

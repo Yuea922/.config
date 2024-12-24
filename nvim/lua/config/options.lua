@@ -45,7 +45,8 @@ opt.autowrite = true
 opt.foldlevel = 99
 opt.foldenable = false
 
-opt.statuscolumn = [[%!v:lua.require'util'.ui.statuscolumn()]]
+-- area of the side of window, normally containing ths fold, sign and number of columns
+opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
 
 opt.smoothscroll = true
 opt.foldmethod = "expr"

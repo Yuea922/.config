@@ -1,9 +1,12 @@
 local LazyUtil = require("lazy.core.util")
----@class util
----@field ui util.ui
----@field telescope util.telescope
----@field plugin util.plugin
+
+---@class util: LazyUtilCore
 ---@field inject util.inject
+---@field lsp util.lsp
+---@field plugin util.plugin
+---@field root util.root
+---@field telescope util.telescope
+---@field ui util.ui
 local M = {}
 
 setmetatable(M, {
@@ -44,8 +47,8 @@ function M.opts(name)
     if not plugin then
         return {}
     end
-    local Plugin = require('lazy.core.plugin')
-    return Plugin.values(plugin, 'opts', false)
+    local Plugin = require("lazy.core.plugin")
+    return Plugin.values(plugin, "opts", false)
 end
 
 -- delay notifications till vim.notify was replaced or after 500ms

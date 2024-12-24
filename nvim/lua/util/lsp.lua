@@ -1,7 +1,7 @@
 ---@class util.lsp
 local M = {}
 
----@alias lsp.Client.filter {id?: number, bufnr?: number, name?: string, method?: string, filter?:fun(client: lsp.Client):boolean}
+---@alias lsp.Client.filter {id?: number, bufnr?: number, name?: string, method?: string, filter?:fun(client: vim.lsp.Client):boolean}
 
 ---@param opts? lsp.Client.filter
 function M.get_clients(opts)
@@ -22,8 +22,9 @@ function M.get_clients(opts)
 end
 
 ---@param on_attach fun(client, buffer)
-function M.on_attach(on_attach)
-    vim.api.nvim_create_autocmd('LspAttach', {
+---@param name? string
+function M.on_attach(on_attach, name)
+    vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
             local buffer = args.buf ---@type number
             local client = vim.lsp.get_client_by_id(args.data.client_id)
@@ -124,9 +125,9 @@ end
 function M.on_rename(from, to)
     local clients = M.get_clients()
     for _, client in ipairs(clients) do
-        if client.supports_method('workspace/willRenameFiles') then
+        if client.supports_method("workspace/willRenameFiles") then
             ---@diagnostic disable-next-line: invisible
-            local resp = client.request_sync('workspace/willRenameFiles', {
+            local resp = client.request_sync("workspace/willRenameFiles", {
                 files = {
                     {
                         oldUri = vim.uri_from_fname(from),

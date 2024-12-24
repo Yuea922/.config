@@ -6,15 +6,15 @@ local M = setmetatable({}, {
     end,
 })
 
----@class LazyRoot
+---@class Root
 ---@field paths string[]
----@field spec LazyRootSpec
+---@field spec RootSpec
 
----@alias LazyRootFn fun(buf: number): (string|string[])
+---@alias RootFn fun(buf: number): (string|string[])
 
----@alias LazyRootSpec string|string[]|LazyRootFn
+---@alias RootSpec string|string[]|RootFn
 
----@type LazyRootSpec[]
+---@type RootSpec[]
 M.spec = { "lsp", { ".git", "lua" }, "cwd" }
 
 M.detectors = {}
@@ -79,8 +79,8 @@ function M.realpath(path)
     return Util.norm(path)
 end
 
----@param spec LazyRootSpec
----@return LazyRootFn
+---@param spec RootSpec
+---@return RootFn
 function M.resolve(spec)
     if M.detectors[spec] then
         return M.detectors[spec]
@@ -92,13 +92,13 @@ function M.resolve(spec)
     end
 end
 
----@param opts? { buf?: number, spec?: LazyRootSpec[], all?: boolean }
+---@param opts? { buf?: number, spec?: RootSpec[], all?: boolean }
 function M.detect(opts)
     opts = opts or {}
     opts.spec = opts.spec or type(vim.g.root_spec) == "table" and vim.g.root_spec or M.spec
     opts.buf = (opts.buf == nil or opts.buf == 0) and vim.api.nvim_get_current_buf() or opts.buf
 
-    local ret = {} ---@type LazyRoot[]
+    local ret = {} ---@type Root[]
     for _, spec in ipairs(opts.spec) do
         local paths = M.resolve(spec)(opts.buf)
         paths = paths or {}
@@ -131,18 +131,18 @@ function M.info()
     local first = true
     for _, root in ipairs(roots) do
         for _, path in ipairs(root.paths) do
-        lines[#lines + 1] = ("- [%s] `%s` **(%s)**"):format(
-            first and "x" or " ",
-            path,
-            type(root.spec) == "table" and table.concat(root.spec, ", ") or root.spec
-        )
-        first = false
+            lines[#lines + 1] = ("- [%s] `%s` **(%s)**"):format(
+                first and "x" or " ",
+                path,
+                type(root.spec) == "table" and table.concat(root.spec, ", ") or root.spec
+            )
+            first = false
         end
     end
     lines[#lines + 1] = "```lua"
     lines[#lines + 1] = "vim.g.root_spec = " .. vim.inspect(spec)
     lines[#lines + 1] = "```"
-    require("util").info(lines, { title = "Neovim Roots" })
+    Util.info(lines, { title = "Neovim Roots" })
     return roots[1] and roots[1].paths[1] or vim.uv.cwd()
 end
 
@@ -180,6 +180,13 @@ function M.get(opts)
     if opts and opts.normalize then
         return ret
     end
+    return ret
+end
+
+function M.git()
+    local root = M.get()
+    local git_root = vim.fs.find(".git", { path = root, upward = true })[1]
+    local ret = git_root and vim.fn.fnamemodify(git_root, ":h") or root
     return ret
 end
 

@@ -2,27 +2,27 @@
 -- themes
 --
 return {
-	-- tokyonight
-	{
-		"folke/tokyonight.nvim",
-		lazy = true,
-		opts = { style = "moon" },
-	},
+    -- tokyonight
+    {
+        "folke/tokyonight.nvim",
+        lazy = true,
+        opts = { style = "moon" },
+    },
 
-	-- catppuccin
-	{
-		"catppuccin/nvim",
-		lazy = true,
-		name = "catppuccin",
-	},
+    -- catppuccin
+    {
+        "catppuccin/nvim",
+        lazy = true,
+        name = "catppuccin",
+    },
 
-	{
-		"sainnhe/edge",
-		lazy = true,
-	},
+    {
+        "sainnhe/edge",
+        lazy = true,
+    },
 
-	{
-		"Iron-E/nvim-highlite",
-		lazy = true,
-	},
+    {
+        "Iron-E/nvim-highlite",
+        lazy = true,
+    },
 }

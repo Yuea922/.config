@@ -1,5 +1,5 @@
 ---@class util.telescope.opts
----@field cwd? string
+---@field cwd? string|string[]
 ---@field root? boolean
 ---@field show_untracked? boolean
 

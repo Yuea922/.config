@@ -6,4 +6,7 @@
 !/nvim/
 !/tmux-powerline/
 !/.tmux.conf
+!/zsh/
+!/yazi/
+/yazi/bookmark
 !/.gitignore

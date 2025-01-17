@@ -5,6 +5,7 @@ return {
         event = { "BufReadPre", "BufNewFile" },
         opts = {
             linters_by_ft = {
+                cmake = { "cmakelint" },
                 javascript = { "eslint_d" },
                 javascriptreact = { "eslint_d" },
                 python = { "pylint" },

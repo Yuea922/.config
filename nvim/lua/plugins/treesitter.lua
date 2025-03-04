@@ -60,14 +60,6 @@ return {
                     node_decremental = "<bs>",
                 },
             },
-            rainbow = {
-                enable = true,
-                -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
-                extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-                max_file_lines = nil, -- Do not enable for files with more than n lines, int
-                -- colors = {}, -- table of hex strings
-                -- termcolors = {} -- table of colour name strings
-            },
         },
         ---@param opts TSConfig
         config = function(_, opts)
@@ -115,12 +107,6 @@ return {
             }):map("<leader>ut")
             return { mode = "cursor", max_lines = 3 }
         end,
-    },
-
-    {
-        "p00f/nvim-ts-rainbow",
-        enabled = true,
-        event = { "LazyFile", "VeryLazy" },
     },
 
     {

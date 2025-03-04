@@ -198,4 +198,24 @@ return {
             table.insert(opts.sources, { name = "lazydev", group_index = 0 })
         end,
     },
+
+    {
+        "HiPhish/rainbow-delimiters.nvim",
+        enabled = true,
+        event = { "LazyFile", "VeryLazy" },
+        opts = {
+            highlight = {
+                "RainbowDelimiterGreen",
+                "RainbowDelimiterOrange",
+                "RainbowDelimiterBlue",
+                "RainbowDelimiterYellow",
+                "RainbowDelimiterCyan",
+                "RainbowDelimiterViolet",
+                "RainbowDelimiterRed",
+            },
+        },
+        config = function(_, opts)
+            require("rainbow-delimiters.setup").setup(opts)
+        end,
+    },
 }

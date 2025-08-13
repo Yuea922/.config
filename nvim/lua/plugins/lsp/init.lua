@@ -225,6 +225,7 @@ return {
                 "shfmt",
                 "cmakelang",
                 "cmakelint",
+                "clang-format",
             },
         },
         ---@param opts MasonSettings | {ensure_installed: string[]}

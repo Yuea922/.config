@@ -41,6 +41,8 @@ export PATH=$PATH:/opt/colmap/bin/
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
+# use "conda config --set auto_activate_base false"
+# to disable automatic activation of conda base environment
 __conda_setup="$('/home/qzy/5_opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
@@ -91,8 +93,10 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/gtsam-4.2.0/lib
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/opencv-4.10.0/lib
 
 # ceres-1.14.0
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/ceres-1.14.0/lib/cmake/ceres/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/ceres-1.14.0/lib/
+
+# ceres-2.2.0
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/ceres-2.2.0/lib/
 
 # sophus-a621ff
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/sophus-a621ff/lib/
@@ -101,3 +105,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/sophus-a621ff/lib/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-12.2/lib64
 export PATH=$PATH:/usr/local/cuda-12.2/bin
 export CUDA_HOME=$CUDA_HOME:/usr/local/cuda-12.2
+
+# TensorRT-10.7.0.23
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/TensorRT-10.7.0.23/lib/

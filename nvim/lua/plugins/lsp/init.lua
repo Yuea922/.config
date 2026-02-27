@@ -6,6 +6,7 @@ return {
         dependencies = {
             "mason.nvim",
             "williamboman/mason-lspconfig.nvim",
+            "saghen/blink.cmp",
         },
         ---@class PluginLspOpts
         opts = {
@@ -58,6 +59,7 @@ return {
                 lua_ls = {},
                 jsonls = {},
                 clangd = {
+                    filetypes = { "c", "cpp", "objc", "objcpp" },
                     keys = {
                         { "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
                     },
@@ -65,6 +67,9 @@ return {
                 cmake = {},
                 eslint = {},
                 pyright = {},
+                protols = {
+                    filetypes = { "proto" },
+                },
             },
             -- you can do any additional lsp server setup here
             -- return true if you don't want this server to be setup with lspconfig
@@ -171,6 +176,13 @@ return {
                         return
                     end
                 end
+
+                -- add blink.cmp capabilities
+                server_opts.capabilities = vim.tbl_deep_extend(
+                    "force",
+                    server_opts.capabilities,
+                    require("blink.cmp").get_lsp_capabilities({}, false)
+                )
                 require("lspconfig")[server].setup(server_opts)
             end
 
@@ -226,6 +238,7 @@ return {
                 "cmakelang",
                 "cmakelint",
                 "clang-format",
+                "protols",
             },
         },
         ---@param opts MasonSettings | {ensure_installed: string[]}

@@ -14,6 +14,7 @@ export NVM_DIR="$HOME/.nvm"
 
 ### ROS Noetic
 source /opt/ros/noetic/setup.zsh
+export DISABLE_ROS1_EOL_WARNINGS=0
 
 # neovim config
 export PATH="$PATH:/opt/nvim-linux64/bin"
@@ -55,6 +56,14 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+# jadx
+export PATH=$PATH:/opt/jadx-1.5.3/bin/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/jadx-1.5.3/lib/
+
+# Rust
+export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
 
 # -----------------------------------------------------------------------------------------------------
 # 3rdparty config

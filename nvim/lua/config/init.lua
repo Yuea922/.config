@@ -73,6 +73,13 @@ local M = {
             Value         = " ",
             Variable      = "󰀫 ",
         },
+        blink = {
+            LSP      = "🔧",
+            Snippets = "📝",
+            Buffer   = "📄",
+            Path     = "🗂️",
+            Codeium  = "🤖",
+        }
     },
     ---@type table<string, string[]|boolean>?
     kind_filter = {

@@ -291,4 +291,21 @@ return {
             },
         },
     },
+
+    {
+        "catgoose/nvim-colorizer.lua",
+        event = "BufReadPre",
+        opts = {
+            filetypes = { "css", "html", "typescript", "javascript", "vue" },
+            options = {
+                parsers = {
+                    css = true,
+                    tailwind = { enable = true },
+                },
+            },
+            user_default_options = {
+                suppress_deprecation = true, -- hide the info message about the new options format
+            },
+        },
+    },
 }

@@ -47,6 +47,7 @@ return {
                 "luadoc",
                 "vim",
                 "vimdoc",
+                "vue",
                 "xml",
                 "yaml",
                 "regex",

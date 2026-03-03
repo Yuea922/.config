@@ -55,3 +55,15 @@ vim.api.nvim_create_autocmd("FileType", {
         end)
     end,
 })
+
+-- clean up large LSP log file on startup
+vim.api.nvim_create_autocmd("VimEnter", {
+    group = vim.api.nvim_create_augroup("cleanup_lsp_log", { clear = true }),
+    callback = function()
+        local log_path = vim.fn.stdpath("log") .. "/lsp.log"
+        if vim.fn.filereadable(log_path) == 1 and vim.fn.getfsize(log_path) > 1024 * 1024 then
+            vim.fn.writefile({}, log_path)
+        end
+    end,
+    desc = "clean up large LSP log file on startup",
+})

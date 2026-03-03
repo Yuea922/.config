@@ -3,6 +3,7 @@ return {
     {
         "neovim/nvim-lspconfig",
         event = "LazyFile",
+        tag = "v2.3.0",
         dependencies = {
             "mason.nvim",
             "williamboman/mason-lspconfig.nvim",
@@ -69,6 +70,20 @@ return {
                 pyright = {},
                 protols = {
                     filetypes = { "proto" },
+                },
+                volar = {
+                    filetypes = { "vue" },
+                    -- In this mode, the Vue Language Server exclusively manages the CSS/HTML sections.
+                    -- Nees the `ts_ls` server with the `@vue/typescript-plugin` plugin
+                    -- to support TypeScript in `.vue` files.
+                    init_options = {
+                        vue = {
+                            hybridMode = true, -- default
+                        },
+                    },
+                },
+                vtsls = {
+                    filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
                 },
             },
             -- you can do any additional lsp server setup here
@@ -233,12 +248,16 @@ return {
                 },
             },
             ensure_installed = {
-                "stylua",
+                "stylua", -- stylua@0.20.0
                 "shfmt",
                 "cmakelang",
                 "cmakelint",
-                "clang-format",
+                "clang-format", -- clang-format@20.1.0
+                "clangd", -- clangd@20.1.0
                 "protols",
+                "vue-language-server", -- volar@2.2.8
+                "vtsls",
+                "prettier",
             },
         },
         ---@param opts MasonSettings | {ensure_installed: string[]}

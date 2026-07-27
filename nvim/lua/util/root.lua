@@ -29,7 +29,7 @@ function M.detectors.lsp(buf)
         return {}
     end
     local roots = {} ---@type string[]
-    local clients = Util.lsp.get_clients({ bufnr = buf })
+    local clients = vim.lsp.get_clients({ bufnr = buf })
     clients = vim.tbl_filter(function(client)
         return not vim.tbl_contains(vim.g.root_lsp_ignore or {}, client.name)
     end, clients)
@@ -37,6 +37,9 @@ function M.detectors.lsp(buf)
         local workspace = client.config.workspace_folders
         for _, ws in pairs(workspace or {}) do
             roots[#roots + 1] = vim.uri_to_fname(ws.uri)
+        end
+        if client.root_dir then
+            roots[#roots + 1] = client.root_dir
         end
     end
     return vim.tbl_filter(function(path)
@@ -170,10 +173,11 @@ end
 ---@param opts? {normalize?:boolean}
 ---@return string
 function M.get(opts)
+    opts = opts or {}
     local buf = vim.api.nvim_get_current_buf()
     local ret = M.cache[buf]
     if not ret then
-        local roots = M.detect({ all = false })
+        local roots = M.detect({ all = false, buf = buf })
         ret = roots[1] and roots[1].paths[1] or vim.uv.cwd()
         M.cache[buf] = ret
     end

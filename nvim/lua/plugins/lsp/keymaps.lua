@@ -22,7 +22,7 @@ function M.get()
         { "gy", vim.lsp.buf.type_definition, desc = "Goto T[y]pe Definition" },
         { "gr", "<cmd>Telescope lsp_references<cr>", desc = "References" },
         { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
-        { "K", vim.lsp.buf.hover, desc = "Hover" },
+        { "K", function() return vim.lsp.buf.hover() end, desc = "Hover" },
         { "gK", function() return vim.lsp.buf.signature_help() end, desc = "Signature Help", has = "signatureHelp" },
         { "<C-k>", function() return vim.lsp.buf.signature_help() end, mode = "i", desc = "Signature Help", has = "signatureHelp" },
         { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" }, has = "codeAction" },
@@ -78,9 +78,9 @@ function M.has(buffer, method)
         return false
     end
     method = method:find("/") and method or "textDocument/" .. method
-    local clients = require("util").lsp.get_clients({ bufnr = buffer })
+    local clients = vim.lsp.get_clients({ bufnr = buffer })
     for _, client in ipairs(clients) do
-        if client.supports_method(method) then
+        if client:supports_method(method) then
             return true
         end
     end
@@ -96,7 +96,7 @@ function M.resolve(buffer)
     end
     local spec = M.get()
     local opts = require("util").opts("nvim-lspconfig")
-    local clients = require("util").lsp.get_clients({ bufnr = buffer })
+    local clients = vim.lsp.get_clients({ bufnr = buffer })
     for _, client in ipairs(clients) do
         local maps = opts.servers[client.name] and opts.servers[client.name].keys or {}
         vim.list_extend(spec, maps)
@@ -124,10 +124,10 @@ function M.on_attach(_, buffer)
 end
 
 function M.diagnostic_goto(next, severity)
-    local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+    local count = next and 1 or -1 -- next use 1, prev use -1
     severity = severity and vim.diagnostic.severity[severity] or nil
     return function()
-        go({ severity = severity })
+        vim.diagnostic.jump({ count = count, severity = severity })
     end
 end
 

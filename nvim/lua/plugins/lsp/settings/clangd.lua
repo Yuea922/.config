@@ -1,5 +1,3 @@
-local util = require("lspconfig.util")
-
 return {
     cmd = {
         "clangd",
@@ -10,17 +8,24 @@ return {
         "--function-arg-placeholders",
         "--fallback-style=llvm",
     },
-    root_dir = function(fname)
-        return util.root_pattern(
-            ".clangd",
-            ".clang-tidy",
-            ".clang-format",
-            "compile_commands.json",
-            "compile_flags.txt",
-            "configure.ac", -- AutoTools
-            "build/compile_commands.json"
-        )(fname) or vim.fs.dirname(vim.fs.find(".git", { path = fname, upward = true })[1])
-    end,
+    root_markers = {
+        ".svn",
+        "build/compile_commands.json",
+        "compile_commands.json",
+        "compile_flags.txt",
+        "configure.ac", -- AutoTools
+        "Makefile",
+        "configure.ac",
+        "configure.in",
+        "config.h.in",
+        "meson.build",
+        "meson_options.txt",
+        "build.ninja",
+        ".git",
+    },
+    capabilities = {
+        offsetEncoding = { "utf-8", "utf-16" },
+    },
     init_options = {
         usePlaceholders = true,
         completeUnimported = true,

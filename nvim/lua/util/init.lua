@@ -7,6 +7,8 @@ local LazyUtil = require("lazy.core.util")
 ---@field root util.root
 ---@field telescope util.telescope
 ---@field ui util.ui
+---@field treesitter util.treesitter
+---@field mini util.mini
 local M = {}
 
 setmetatable(M, {
@@ -86,6 +88,29 @@ function M.lazy_notify()
     end)
     -- or if it took more than 500ms, then something went wrong
     timer:start(500, 0, replay)
+end
+
+function M.is_loaded(name)
+    local Config = require("lazy.core.config")
+    return Config.plugins[name] and Config.plugins[name]._.loaded
+end
+
+---@param name string
+---@param fn fun(name:string)
+function M.on_load(name, fn)
+    if M.is_loaded(name) then
+        fn(name)
+    else
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "LazyLoad",
+            callback = function(event)
+                if event.data == name then
+                    fn(name)
+                    return true
+                end
+            end,
+        })
+    end
 end
 
 return M

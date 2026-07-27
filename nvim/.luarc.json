@@ -1,6 +1,5 @@
 {
     "diagnostics.disable": [
-        "redundant-parameter"
-    ],
-    "completion.autoRequire": false
+        "inject-field"
+    ]
 }

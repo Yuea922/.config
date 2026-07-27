@@ -1,13 +1,11 @@
 -- switch input method
--- vim.api.nvim_create_autocmd({ "InsertLeave" }, {
---     pattern = { "*" },
---     callback = function()
---         local input_status = tonumber(vim.fn.system("fcitx5-remote"))
---         if input_status == 2 then
---             vim.fn.system("fcitx5-remote -c")
---         end
---     end,
--- })
+vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+    pattern = { "*" },
+    callback = function()
+        local fcitx = "flatpak run --command=fcitx5-remote org.fcitx.Fcitx5"
+        vim.fn.system(fcitx .. " -s keyboard-cn")
+    end,
+})
 
 -- auto restore cursor position
 vim.api.nvim_create_autocmd("BufReadPost", {

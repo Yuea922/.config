@@ -154,6 +154,8 @@ return {
         },
         event = { "InsertEnter", "CmdlineEnter" },
 
+        ---@module 'blink.cmp'
+        ---@type blink.cmp.Config
         opts = {
             snippets = {
                 preset = "luasnip",
@@ -162,7 +164,6 @@ return {
                     require("luasnip").lsp_expand(args)
                 end,
             },
-
             sources = {
                 -- adding any nvim-cmp sources here will enable them
                 -- with blink.compat
@@ -170,9 +171,16 @@ return {
                 default = { "lsp", "path", "snippets", "buffer" },
                 per_filetype = {
                     codecompanion = { "codecompanion" },
+                    lua = { inherit_defaults = true, "lazydev" },
+                },
+                providers = {
+                    lazydev = {
+                        name = "LazyDev",
+                        module = "lazydev.integrations.blink",
+                        score_offset = 100, -- show at a higher priority than lsp
+                    },
                 },
             },
-
             appearance = {
                 -- sets the fallback highlight groups to nvim-cmp's highlight groups
                 -- useful for when your theme doesn't support blink.cmp
@@ -183,7 +191,6 @@ return {
                 nerd_font_variant = "mono",
                 kind_icons = require("config").icons.kinds,
             },
-
             signature = {
                 enabled = true,
                 trigger = {
@@ -208,7 +215,6 @@ return {
                     treesitter_highlighting = true,
                 },
             },
-
             completion = {
                 keyword = {
                     -- 'prefix' will fuzzy match on the text before the cursor
@@ -329,7 +335,6 @@ return {
                     },
                 },
             },
-
             cmdline = {
                 enabled = true,
                 keymap = {
@@ -347,7 +352,6 @@ return {
                     ghost_text = { enabled = true },
                 },
             },
-
             keymap = {
                 preset = "default",
                 ["<CR>"] = { "accept", "fallback" },
@@ -362,7 +366,6 @@ return {
                 ["<C-e>"] = { "cancel", "fallback" },
                 ["<C-d>"] = { "snippet_forward" },
             },
-
             hl_group_mapping = {
                 BlinkCmpLabel = "Fg",
                 BlinkCmpLabelMatch = { cterm = { bold = true }, ctermfg = 110, bold = true, fg = "#6cb6eb" },
@@ -408,6 +411,7 @@ return {
                 BlinkCmpKindCodeium = "Cyan",
             },
         },
+        ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
         config = function(_, opts)
             -- setup compat sources
             local enabled = opts.sources.default
@@ -450,28 +454,20 @@ return {
                 end
             end
 
-            -- -- 检查基本颜色组是否存在（至少检查几个关键的）
-            -- local base_groups = { "Fg", "Purple", "Cyan", "Yellow", "Red", "Blue", "Green", "Grey" }
-            -- local ok = true
-            -- for _, group in ipairs(base_groups) do
-            --     local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-            --     if not hl or (not hl.fg and not hl.link) then
-            --         -- 如果没有定义任何颜色，则认为缺失
-            --         ok = false
-            --         break
-            --     end
-            -- end
-
-            for blink_hl, target in pairs(opts.hl_group_mapping) do
-                if type(target) == "string" then
-                    vim.cmd(string.format("highlight! link %s %s", blink_hl, target))
-                elseif type(target) == "table" then
-                    vim.api.nvim_set_hl(0, blink_hl, target)
-                end
-            end
-
+            local hl_group_mapping = opts.hl_group_mapping
             -- Unset custom prop to pass blink.cmp validation
             opts.hl_group_mapping = nil
+            vim.defer_fn(function()
+                for blink_hl, target in pairs(hl_group_mapping) do
+                    if type(target) == "string" then
+                        if vim.fn.hlexists(target) == 1 then
+                            vim.api.nvim_set_hl(0, blink_hl, { link = target })
+                        end
+                    elseif type(target) == "table" then
+                        vim.api.nvim_set_hl(0, blink_hl, target)
+                    end
+                end
+            end, 100)
 
             require("blink.cmp").setup(opts)
         end,
@@ -534,13 +530,60 @@ return {
         },
     },
 
+    -- Extends the a & i text objects, this adds the ability to select
+    -- arguments, function calls, text within quotes and brackets, and to
+    -- repeat those selections to select an outer text object.
+    {
+        "nvim-mini/mini.ai",
+        event = "VeryLazy",
+        opts = function()
+            local ai = require("mini.ai")
+            return {
+                n_lines = 500,
+                custom_textobjects = {
+                    o = ai.gen_spec.treesitter({ -- code block
+                        a = { "@block.outer", "@conditional.outer", "@loop.outer" },
+                        i = { "@block.inner", "@conditional.inner", "@loop.inner" },
+                    }),
+                    f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }), -- function
+                    c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }), -- class
+                    t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
+                    d = { "%f[%d]%d+" }, -- digits
+                    e = { -- Word with case
+                        {
+                            "%u[%l%d]+%f[^%l%d]", -- first word of CamelCase pattern
+                            "%f[%S][%l%d]+%f[^%l%d]", -- first word of snake_case pattern
+                            "%f[%P][%l%d]+%f[^%l%d]",
+                            "^[%l%d]+%f[^%l%d]", -- first word of current line
+                        },
+                        "^().*()$",
+                    },
+                    g = Util.mini.ai_buffer, -- buffer
+                    u = ai.gen_spec.function_call(), -- u for "Usage"
+                    U = ai.gen_spec.function_call({ name_pattern = "[%w_]" }), -- without dot in function name
+                },
+            }
+        end,
+        config = function(_, opts)
+            require("mini.ai").setup(opts)
+            Util.on_load("which-key.nvim", function()
+                vim.schedule(function()
+                    Util.mini.ai_whichkey(opts)
+                end)
+            end)
+        end,
+    },
+
+    -- Configures LuaLS to support auto-completion and type checking
+    -- while editing your Neovim configuration.
     {
         "folke/lazydev.nvim",
         ft = "lua",
         cmd = "LazyDev",
         opts = {
             library = {
-                { path = "luvit-meta/library", words = { "vim%.uv" } },
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+                { path = "LazyVim", words = { "LazyVim" } },
                 { path = "snacks.nvim", words = { "Snacks" } },
                 { path = "lazy.nvim", words = { "LazyVim" } },
             },
@@ -596,5 +639,19 @@ return {
         config = function(_, opts)
             require("rainbow-delimiters.setup").setup(opts)
         end,
+    },
+
+    {
+        "linux-cultist/venv-selector.nvim",
+        cmd = "VenvSelect",
+        opts = {
+            options = {
+                notify_user_on_venv_activation = true,
+                override_notify = false,
+            },
+        },
+        --  Call config for Python files and load the cached venv automatically
+        ft = "python",
+        keys = { { "<leader>cv", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" } },
     },
 }

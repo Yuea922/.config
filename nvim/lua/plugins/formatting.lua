@@ -1,3 +1,4 @@
+---@alias ConformCtx {buf: number, filename: string, dirname: string}
 local prettier_ft = {
     "css",
     "graphql",
@@ -70,13 +71,14 @@ return {
                 json = { "jq" },
                 lua = { "stylua" },
                 cmake = { "cmake_format" },
-                -- sh = { "shfmt" },
+                sh = { "shfmt" },
                 vue = { "prettier" },
                 -- javascript = { "prettier" },
                 typescript = { "prettier" },
+                python = { "black" },
             },
             format_on_save = function(bufnr)
-                local ignore_filetypes = { "cpp", "cmake", "proto" }
+                local ignore_filetypes = { "cpp", "cmake", "proto", "python", "sh" }
                 if vim.tbl_contains(ignore_filetypes, vim.bo[bufnr].filetype) then
                     return
                 end
